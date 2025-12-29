@@ -8,36 +8,61 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { cn } from '@/lib/utils';
 
-import React from 'react';
-
-const DataTable = () => {
+const DataTable = <T,>({
+  columns,
+  data,
+  rowKey,
+  tableClassName,
+  headerRowClassName,
+  headerCellClassName,
+  bodyRowClassName,
+  bodyCellClassName,
+  headerClassName,
+}: DataTableProps<T>) => {
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>Age</TableHead>
-          <TableHead>Location</TableHead>
+    <Table className={cn('custom-scrollbar', tableClassName)}>
+      <TableHeader className={headerClassName}>
+        <TableRow className={cn('hover:bg-transparent!', headerRowClassName)}>
+          {columns.map((column, i) => (
+            <TableHead
+              key={i}
+              className={cn(
+                'bg-dark-400 text-purple-100 py-4 first:pl-5 last:pr-5',
+                headerCellClassName,
+                column.headClassName
+              )}
+            >
+              {column.header}
+            </TableHead>
+          ))}
         </TableRow>
       </TableHeader>
       <TableBody>
-        <TableRow>
-          <TableCell>John Doe</TableCell>
-          <TableCell>30</TableCell>
-          <TableCell>New York</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>Jane Smith</TableCell>
-          <TableCell>25</TableCell>
-          <TableCell>Los Angeles</TableCell>
-        </TableRow>
+        {data.map((row, rowIndex) => (
+          <TableRow
+            key={rowKey(row, rowIndex)}
+            className={cn(
+              'overflow-hidden rounded-lg border-b border-purple-100/5 hover:bg-dark-400/30! relative',
+              bodyRowClassName
+            )}
+          >
+            {columns.map((column, columnIndex) => (
+              <TableCell
+                key={columnIndex}
+                className={cn(
+                  'py-4 first:pl-5 last:pr-5',
+                  bodyCellClassName,
+                  column.cellClassName
+                )}
+              >
+                {column.cell(row, rowIndex)}
+              </TableCell>
+            ))}
+          </TableRow>
+        ))}
       </TableBody>
-      <TableFooter>
-        <TableRow>
-          <TableCell colSpan={3}>Footer Content</TableCell>
-        </TableRow>
-      </TableFooter>
     </Table>
   );
 };
